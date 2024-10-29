@@ -1,0 +1,86 @@
+Section 1: Problem Definition
+Public and Private Inputs of the Circuit
+
+Public Inputs:
+
+The target value: 
+9
+
+The equation: 
+𝑥2+𝑥+7
+Private Inputs:
+
+The secret value x, which the prover knows but does not reveal.
+
+
+Section 2: ZK Protocol Selection
+Chosen Protocol: Groth16
+
+Justification:
+Efficiency: Groth16 is known for its very short proof sizes and fast verification times, making it suitable for applications where quick verification is crucial.
+Security: Groth16 is a non-interactive proof system with a strong security foundation based on standard assumptions.
+Ease of Implementation: There are established libraries and tools for Groth16, which simplifies the implementation process, particularly in environments like zk-SNARKs.
+Section 3: Circuit Design
+ZK Circuit Design
+
+Circuit Inputs:
+
+Public Input: 
+target=9
+
+Private Input: 
+x
+Arithmetic Circuit:
+
+The circuit must compute x2+x+7 and compare it to the public input 9.
+
+Circuit Breakdown:
+
+Compute x2: Create a multiplication gate for x and x.
+Add x2+x: Create an addition gate that takes the output from the multiplication gate and x.
+Add x2+x+7: Add another constant (7) to the previous result.
+Equality Check: Create a gate to check if the final result equals 9
+Optimization:
+
+Use fewer gates where possible (e.g., combining addition steps).
+Ensure that constant values are handled efficiently to reduce circuit size.
+Section 4: Implementation
+Implementation Using a ZK Framework
+
+Framework Selection: Use Circom, a popular framework for creating ZK circuits.
+
+ZK Circuit Code:
+
+plaintext
+Copy code
+template equationProof() {
+    signal input x;       // Private input
+    signal input target;  // Public input (9)
+    signal output result; // Output signal to check against target
+    
+    // Compute x^2
+    signal x2;
+    x2 <== x * x;
+
+    // Compute x^2 + x + 7
+    signal sum1;
+    sum1 <== x2 + x;  // x^2 + x
+    result <== sum1 + 7; // x^2 + x + 7
+
+    // Check if result == target
+    result === target; // Enforces the equation constraint
+}
+
+component main = equationProof();
+Proof Generation:
+
+Use Circom to compile the circuit and generate the trusted setup for Groth16.
+Generate the proof by providing a specific value for x.
+Verification:
+
+Use the Groth16 verifier to check the proof against the public input 9.
+Trade-offs:
+
+Proof Generation Time: Depending on the complexity of the circuit, generating the proof can take time, particularly in larger circuits.
+Proof Size: Groth16 provides small proof sizes, making it efficient for storage and transmission.
+Verification Time: Fast verification is beneficial for user experience, particularly in applications where quick confirmations are needed.
